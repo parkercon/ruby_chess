@@ -8,8 +8,10 @@ class Piece
     @color = color
   end
 
-  # maybe delete
-  # def to_s
-  #   color == 'white' ? symbol : symbol.black
-  # end
+  def get_valid_moves; nil end
+
+  def valid_move?(dest)
+    get_valid_moves.include? dest
+  end
+  
 end

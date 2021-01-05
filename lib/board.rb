@@ -5,9 +5,7 @@ class Board
   CYAN_BLOCK = '     '.bg_cyan
   RED_BLOCK = '     '.bg_red
   attr_accessor :player_one, :player_two, :board_visual
-  def initialize(name1, name2)
-    @player_one = Player.new(name1, 'white')
-    @player_two = Player.new(name2, 'black')
+  def initialize
     @board_visual = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE) }
     @board_data = generate_board_data
     generate_board_visual
@@ -36,10 +34,10 @@ class Board
   end
 
   def input_to_coord(input)
-    #CHECK VALID
+    return nil unless valid_input?(input)
     coordinates = Array.new(2)
-    coordinates[0] = letter_to_number(input[0])
-    coordinates[1] = input[1].to_i
+    coordinates[0] = input[1].to_i
+    coordinates[1] = letter_to_number(input[0])
     coordinates
   end
   
@@ -74,38 +72,39 @@ class Board
     end
   end
 
-  def print_board
-    puts "\n"
+  def print_board(player_one, player_two)
+    56.times { puts "\n" }
+    puts "           a    b    c    d    e    f    g    h"
     (0...BOARD_SIZE).each do |row|
       print "       #{row} " 
       (0...BOARD_SIZE).each do |col|
-        @player_one.pieces.each do |piece|
+        player_one.pieces.each do |piece|
           if piece.x == row && piece.y == col
             @board_visual[row][col] = @board_visual[row][col] == CYAN_BLOCK ? "  #{piece.symbol}  ".bg_cyan : "  #{piece.symbol}  ".bg_red
           end
         end
-        @player_two.pieces.each do |piece|
+        player_two.pieces.each do |piece|
           if piece.x == row && piece.y == col
             @board_visual[row][col] = @board_visual[row][col] == CYAN_BLOCK ? "  #{piece.symbol}  ".bg_cyan.black : "  #{piece.symbol}  ".bg_red.black
           end
         end
         print "#{@board_visual[row][col]}"
       end
+      print " #{row} "
       print "\n"
     end 
     puts "           a    b    c    d    e    f    g    h"
     # @board_visual[data[0]][data[1]] = @board_visual[data[0]][data[1]] == "  #{piece.symbol}  ".bg_cyan ? CYAN_BLOCK : RED_BLOCK
   end 
 
-  def update_board(input)
-    #maybe change input here 
-    row = 6
-    col = 0
-    #====where i would get input ======
-    player_one.pieces[0].x = 5
-    @board_visual[6][0] = @board_visual[6][0] == "  #{@player_one.pieces[0].symbol}  ".bg_cyan ? CYAN_BLOCK : RED_BLOCK
+  def update_board(player, start, dest) #need to change to allow multiple players
+    idx = player.find_piece_index(start[0], start[1])
+    player.pieces[idx].x = dest[0]
+    player.pieces[idx].y = dest[1]
+    @board_visual[start[0]][start[1]] = @board_visual[start[0]][start[1]] == "  #{player.pieces[idx].symbol}  ".bg_cyan ? CYAN_BLOCK : RED_BLOCK
+    if player.pieces[idx].is_a? Pawn || player.pieces[idx].is_a?(King) || player.pieces[idx].is_a?(Rook)
+      player.pieces[idx].moved = true
+    end
     generate_board_visual
-    puts print_board
   end
-
 end

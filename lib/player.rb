@@ -41,4 +41,13 @@ class Player
     p_array << Rook.new(0, 7, 'black')
     p_array
   end
+
+  def find_piece_index(row, col)
+    @pieces.each_with_index do |piece, idx|
+      if piece.x == row && piece.y == col
+        return idx
+      end
+    end
+    nil
+  end
 end

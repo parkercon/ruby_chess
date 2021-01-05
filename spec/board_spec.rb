@@ -65,10 +65,10 @@ describe Board do
   describe "#input_to_coord" do
     subject(:board) { described_class.new('name1', 'name2') }
     context 'when user enters b3' do
-      it 'returns [1, 3]' do
+      it 'returns [3, 1]' do
         input = 'b3'
         solution = board.input_to_coord(input)
-        expect(solution).to eq([1, 3])
+        expect(solution).to eq([3, 1])
       end
     end
     context 'when user enters h7' do
