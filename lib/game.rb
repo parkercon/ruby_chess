@@ -18,6 +18,7 @@ class Game
     @board = Board.new
     done = false
     player = player_one
+    opponent = player_two
     until done == true do
       begin
         puts "#{player.name}, your turn!\n"
@@ -31,11 +32,13 @@ class Game
         piece = player.pieces[player.find_piece_index(start[0], start[1])]
         raise "Invalid input, please ensure input is within bounds" if start.nil? || dest.nil?
         raise "Invalid move, not within the moveset" unless piece.valid_move?(dest)
+        raise "Invalid move, not within the moveset" if @board.pawn_validation(player, start, dest).nil?
         rescue StandardError => e
           puts e.to_s.red
           retry
       end
-        @board.update_board(player, start, dest)
+        @board.update_board(player, opponent, start, dest)
+        opponent = player
         player = switch_player(player.name)
     end
   end

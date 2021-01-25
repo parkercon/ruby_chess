@@ -73,7 +73,6 @@ class Board
   end
 
   def print_board(player_one, player_two)
-    56.times { puts "\n" }
     puts "           a    b    c    d    e    f    g    h"
     (0...BOARD_SIZE).each do |row|
       print "       #{row} " 
@@ -97,10 +96,28 @@ class Board
     # @board_visual[data[0]][data[1]] = @board_visual[data[0]][data[1]] == "  #{piece.symbol}  ".bg_cyan ? CYAN_BLOCK : RED_BLOCK
   end 
 
-  def update_board(player, start, dest) #need to change to allow multiple players
+  def pawn_validation(player, start, dest)
+    if start[1] == dest[1]
+      if @board_visual[dest[0]][dest[1]] != CYAN_BLOCK && @board_visual[dest[0]][dest[1]] != RED_BLOCK
+        return nil
+      end
+    elsif start[1] != dest[1]
+      if @board_visual[dest[0]][dest[1]] == CYAN_BLOCK && @board_visual[dest[0]][dest[1]] == RED_BLOCK
+        return nil
+      end
+    end
+    1
+  end
+
+  def update_board(player, opponent, start, dest) #need to change to allow multiple players
     idx = player.find_piece_index(start[0], start[1])
+    opp_idx = opponent.find_piece_index(dest[0], dest[1])
     player.pieces[idx].x = dest[0]
     player.pieces[idx].y = dest[1]
+    if !opp_idx.nil?
+      print "\nPiece Captured!\n"
+      opponent.pieces.slice!(opp_idx) #to remove opponent pieces
+    end
     @board_visual[start[0]][start[1]] = @board_visual[start[0]][start[1]] == "  #{player.pieces[idx].symbol}  ".bg_cyan ? CYAN_BLOCK : RED_BLOCK
     if player.pieces[idx].is_a? Pawn || player.pieces[idx].is_a?(King) || player.pieces[idx].is_a?(Rook)
       player.pieces[idx].moved = true

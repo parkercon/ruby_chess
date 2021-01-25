@@ -12,20 +12,28 @@ class Pawn < Piece
     if !moved && color == 'black'
       potentials.push(
         [x + 1, y],
-        [x + 2, y] 
+        [x + 2, y],
+        [x + 1, y + 1],
+        [x + 1, y - 1]
       )
     elsif !moved && color == 'white'
       potentials.push(
         [x - 1, y],
-        [x - 2, y] 
+        [x - 2, y],
+        [x - 1, y + 1],
+        [x - 1, y - 1]
       )
     elsif moved && color == 'black'
       potentials.push(
         [x + 1, y],
+        [x + 1, y + 1],
+        [x + 1, y - 1]
       )
     elsif moved && color == 'white'
       potentials.push(
         [x - 1, y],
+        [x - 1, y + 1],
+        [x - 1, y - 1]
       )
     end
   end
