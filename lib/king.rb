@@ -1,4 +1,5 @@
 class King < Piece
+  attr_accessor :moved
   def initialize(x, y, color)
     @symbol = '♔'
     super(x, y, symbol, color)

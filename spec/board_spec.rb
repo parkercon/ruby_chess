@@ -2,7 +2,7 @@ require './lib/board'
 
 describe Board do
   describe '#letter_to_number' do
-    subject(:board) { described_class.new('name1', 'name2') }
+    subject(:board) { described_class.new }
     context 'converts a letter coordinate to a number representing the column' do
       it 'takes a and returns 0' do
         input = 'a'
@@ -25,7 +25,7 @@ describe Board do
     end
 
   describe '#valid_input?' do
-    subject(:board) { described_class.new('name1', 'name2') }
+    subject(:board) { described_class.new }
     context 'when a user enters a3 (valid input)' do
       it 'returns true' do
         input = 'a3'
@@ -63,7 +63,7 @@ describe Board do
     end
   end
   describe "#input_to_coord" do
-    subject(:board) { described_class.new('name1', 'name2') }
+    subject(:board) { described_class.new}
     context 'when user enters b3' do
       it 'returns [3, 1]' do
         input = 'b3'
@@ -71,11 +71,11 @@ describe Board do
         expect(solution).to eq([3, 1])
       end
     end
-    context 'when user enters h7' do
-      it 'returns [7, 7]' do
-        input = 'h7'
+    context 'when user enters f7' do
+      it 'returns [5, 7]' do
+        input = 'f7'
         solution = board.input_to_coord(input)
-        expect(solution).to eq([7, 7])
+        expect(solution).to eq([7, 5])
       end
     end
   end

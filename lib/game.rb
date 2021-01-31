@@ -25,21 +25,25 @@ class Game
         @board.generate_board_visual
         puts @board.print_board(@player_one, @player_two)
         puts 'choose piece'
-        start = @board.input_to_coord(gets.chomp) #check valid
+        start = @board.input_to_coord(gets.chomp)
+        raise "Invalid input" if start.nil?
         puts 'where to'
-        dest = @board.input_to_coord(gets.chomp) #check valid
+        dest = @board.input_to_coord(gets.chomp) 
+        raise "Invalid input" if dest.nil?
         raise "Invalid input, please select a valid cell" if player.find_piece_index(start[0], start[1]).nil?
         piece = player.pieces[player.find_piece_index(start[0], start[1])]
         raise "Invalid input, please ensure input is within bounds" if start.nil? || dest.nil?
         raise "Invalid move, not within the moveset" unless piece.valid_move?(dest)
-        raise "Invalid move, not within the moveset" if @board.pawn_validation(player, start, dest).nil?
+        raise "Invalid move, pawn validation" if @board.pawn_validation(player, start, dest).nil?
+        raise "Invalid move, can't go through pieces" if @board.conflict_check(player, opponent, start, dest).nil?
         rescue StandardError => e
           puts e.to_s.red
           retry
       end
-        @board.update_board(player, opponent, start, dest)
-        opponent = player
-        player = switch_player(player.name)
+        if !@board.update_board(player, opponent, start, dest).nil?
+          opponent = player
+          player = switch_player(player.name)
+        end
     end
   end
 end
