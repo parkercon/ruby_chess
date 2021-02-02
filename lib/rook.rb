@@ -41,8 +41,8 @@ class Rook < Piece
       )
 
     valid_children = potentials.select do |i|
-      i[0].between?(0,8) &&
-      i[1].between?(0,8)
+      i[0].between?(0,7) &&
+      i[1].between?(0,7)
     end
     valid_children
   end
