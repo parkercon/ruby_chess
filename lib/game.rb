@@ -6,6 +6,21 @@ class Game
   CYAN_BLOCK = '     '.bg_cyan
   RED_BLOCK = '     '.bg_red
   attr_accessor :player_one, :player_two
+
+  def menu
+    puts '\nHello, Welcome to my great chess game in progress!\nWhat would you like to do?\n'
+    puts '(1) Player vs Player'
+    puts '(2) Player vs Computer'
+    puts '(3) Load a Game'
+    input = gets.chomp #error handle
+
+    case input
+
+    when '1'
+      play_game
+    end
+    
+  end
   
   def switch_player(name)
     name == player_one.name ? player_two : player_one

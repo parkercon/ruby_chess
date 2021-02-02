@@ -14,7 +14,7 @@ class Player
   
   def generate_white_pieces
     p_array = []
-    x = 6
+    x = 2
     8.times { |y| p_array << Pawn.new(x, y, 'white') }
     p_array << Rook.new(7, 0, 'white')
     p_array << Knight.new(7, 1, 'white')
@@ -29,7 +29,7 @@ class Player
 
   def generate_black_pieces
     p_array = []
-    x = 1
+    x = 5
     8.times { |y| p_array << Pawn.new(x, y, 'black') }
     p_array << Rook.new(0, 0, 'black')
     p_array << Knight.new(0, 1, 'black')

@@ -117,20 +117,25 @@ class Board
   def conflict_check(player, opponent, start, dest)
     idx = player.find_piece_index(start[0], start[1])
     opp_idx = opponent.find_piece_index(dest[0], dest[1])
-    # p start
-    # p dest
-    # p idx
-    # p "o #{opp_idx}"
     copy_start = start.dup #shallow copy!!!
     copy_dest = dest.dup
-    if player.pieces[idx].is_a? Knight
+    if player.pieces[idx].is_a? Knight #need to check for check
+      player.pieces.each do |piece|
+        if dest[0] == piece.x && dest[1] == piece.y
+          return nil
+        end
+      end
       return 'bo'
     end
-    if player.pieces[idx].is_a? Pawn
+    if player.pieces[idx].is_a? Pawn #need to check for check
+      player.pieces.each do |piece|
+        if dest[0] == piece.x && dest[1] == piece.y
+          return nil
+        end
+      end
       return 'bo'
     end
       
-
     if (copy_start[0] < copy_dest[0] && copy_start[1] < copy_dest[1])
       until copy_start == copy_dest do
         copy_start[0] += 1
@@ -241,9 +246,6 @@ class Board
     dest = Array.new(2)
     dest[0] = opponent.pieces[king_index].x
     dest[1] = opponent.pieces[king_index].y
-    # p "start: #{start}"
-    # p "dest: #{dest}"
-    # p "kidx: #{king_index}"
     conflict_check(player, opponent, start, dest) == 'bop' #need to work on to test for check
   end
 
@@ -253,7 +255,6 @@ class Board
       start[0] = piece.x
       start[1] = piece.y#could clean up
       if conflict_check(opponent, player, start, dest) == 'bop'
-        p "MOVED INTO CHECK" #Finish this check
         return true
       end
     end
@@ -271,7 +272,6 @@ class Board
       pos[0] = piece.x
       pos[1] = piece.y
       if conflict_check(opponent, player, pos, king_pos) == 'bop'
-        print "CHECK YES YES \n"
         return true
       end
     end
@@ -285,32 +285,13 @@ class Board
     king_pos = Array.new(2)
     king_pos[0] = player.pieces[king_index].x
     king_pos[1] = player.pieces[king_index].y
-    p player.pieces[king_index].get_valid_moves
+
     player.pieces[king_index].get_valid_moves.each do |move|
       if !conflict_check(player, opponent, king_pos, move).nil? && !moved_into_check?(player, opponent, move)
         pos_moves << move
       end
     end
 
-    # p pos_moves
-    # pos = Array.new(2)
-
-    # pos_moves.each do |move|
-    #   player.pieces[king_index].x = move[0]
-    #   player.pieces[king_index].y = move[1]
-    #   board_visual[move[0]][move[1]] = @board_visual[move[0]][move[1]] == CYAN_BLOCK ? "  #{player.pieces[king_index].symbol}  ".bg_cyan : "  #{player.pieces[king_index].symbol}  ".bg_red
-    #   opponent.pieces.each do |piece|
-    #     pos[0] = piece.x
-    #     pos[1] = piece.y
-    #     if conflict_check(opponent, player, pos, move) == 'bop'
-    #       puts "THIS BOY STUCK\n".red
-    #     end
-    #   end
-    # end
-    # puts "HE GOOD\n".red
-    # player.pieces[king_index].x = king_pos[0]
-    # player.pieces[king_index].y = king_pos[1]
-    # @board_visual[king_pos[0]][king_pos[1]] = @board_visual[king_pos[0]][king_pos[1]] == "  #{player.pieces[king_index].symbol}  ".bg_cyan ? CYAN_BLOCK : RED_BLOCK
     i = 0
     opponent.pieces.each do |piece|
       pos_moves.each do |move|
@@ -319,12 +300,7 @@ class Board
         end
       end
     end
-    if i == pos_moves.size
-      print "CANT MOVE".yellow
-      return false
-    end
-    puts "can move".blue
-    true
+    i != pos_moves.size 
   end
 
   def can_piece_protect?(opponent, player)
@@ -347,17 +323,61 @@ class Board
         start[0] = piece.x
         start[1] = piece.y
         if piece.get_valid_moves.include?(move) && !conflict_check(player, opponent, start, move).nil? && !piece.is_a?(King)
-          puts "CAN BE PROTECTED\n".green
           return true
         end
       end
     end
-    puts "he dead\n".red
-    return false
+    false
   end 
 
   def checkmate?(opponent, player)
     !can_piece_protect?(opponent, player) && !can_king_escape?(opponent, player)
+  end
+
+  def upgrade(player, idx, color)
+    begin
+    puts "Congrats, what would you like to upgrade your pawn to\n"
+    puts "(1)Knight"
+    puts "(2)Queen"
+    puts "(3)Rook"
+    puts "(4)Bishop"
+    input = gets.chomp
+    raise 'Invalid Input, try again' if input != '1' && input != '2' && input != '3' && input != '4'
+    rescue StandardError => e
+      puts e.to_s.red
+      retry
+    end
+
+    x = player.pieces[idx].x
+    y = player.pieces[idx].y
+    player.pieces.slice!(idx)
+
+    case input
+    when '1'
+      player.pieces << Knight.new(x, y, color)
+    when '2'
+      player.pieces << Queen.new(x, y, color)
+    when '3'
+      player.pieces << Rook.new(x, y, color)
+    when '4'
+      player.pieces << Bishop.new(x, y, color)
+    end
+  end
+
+  def pawn_promotion(player)
+    if player.pieces[0].color == 'white'
+      player.pieces.each_with_index do |piece, idx|
+        if piece.is_a?(Pawn)
+          piece.x == 0 ? upgrade(player, idx, 'white') : next
+        end
+      end
+    elsif player.pieces[0].color == 'black'
+      player.pieces.each_with_index do |piece, idx|
+        if piece.is_a?(Pawn)
+          piece.x == 7 ? upgrade(player, idx, 'black') : next
+        end
+      end
+    end
   end
 
   def update_board(player, opponent, start, dest) #need to change to allow multiple players
@@ -378,6 +398,7 @@ class Board
       player.pieces[idx].moved = true
     end
 
+    pawn_promotion(player)
 
     #make this a method
     p "check: #{in_check?(player, opponent, dest)}"
