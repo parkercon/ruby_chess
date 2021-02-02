@@ -117,6 +117,9 @@ class Board
   def conflict_check(player, opponent, start, dest)
     idx = player.find_piece_index(start[0], start[1])
     opp_idx = opponent.find_piece_index(dest[0], dest[1])
+    opp_king_idx = nil
+    opponent.pieces.each_with_index{ |val, index| opp_king_idx = index if val.is_a? King }
+
     copy_start = start.dup #shallow copy!!!
     copy_dest = dest.dup
     if player.pieces[idx].is_a? Knight #need to check for check
@@ -125,13 +128,26 @@ class Board
           return nil
         end
       end
+      pos_moves = player.pieces[idx].get_valid_moves
+      pos_moves.each do |move|
+        if move[0] == opponent.pieces[opp_king_idx].x && move[1] == opponent.pieces[opp_king_idx].y
+          return 'bop'
+        end 
+      end
       return 'bo'
     end
+
     if player.pieces[idx].is_a? Pawn #need to check for check
       player.pieces.each do |piece|
         if dest[0] == piece.x && dest[1] == piece.y
           return nil
         end
+      end
+      pos_moves = player.pieces[idx].get_valid_moves
+      pos_moves.each do |move|
+        if move[0] == opponent.pieces[opp_king_idx].x && move[1] == opponent.pieces[opp_king_idx].y && move[1] != start[1]
+          return 'bop'
+        end 
       end
       return 'bo'
     end
@@ -386,7 +402,8 @@ class Board
     player.pieces[idx].x = dest[0]
     player.pieces[idx].y = dest[1]
     if !opp_idx.nil?
-      print "\nPiece Captured!\n"
+      print "\nPiece Captured!\n".green
+      copy_piece = opponent.pieces[opp_idx]
       opponent.pieces.slice!(opp_idx) #to remove opponent pieces
     end
     @board_visual[start[0]][start[1]] = @board_visual[start[0]][start[1]] == "  #{player.pieces[idx].symbol}  ".bg_cyan ? CYAN_BLOCK : RED_BLOCK
@@ -399,11 +416,11 @@ class Board
     end
 
     pawn_promotion(player)
-
-    #make this a method
-    p "check: #{in_check?(player, opponent, dest)}"
+    
     if in_check?(player, opponent, dest)
-      p "#{opponent.name} is in check"
+      puts "#{opponent.name} is in check".cyan
+      can_piece_protect?(player, opponent)
+      return 'checkmate' if checkmate?(player, opponent)
     end
 
     #temp change to allow pieces the ability to protect the king
@@ -414,6 +431,7 @@ class Board
         print "\nInvalid, Cannot move into check\n".red
         player.pieces[idx].x = start[0]
         player.pieces[idx].y = start[1]
+        opponent.pieces << copy_piece
         return nil
       end
     end
@@ -422,6 +440,7 @@ class Board
       print "\nInvalid, Cannot put your own king into check\n".red
       player.pieces[idx].x = start[0]
       player.pieces[idx].y = start[1]
+      opponent.pieces << copy_piece
       return nil
     end
     @board_visual[dest[0]][dest[1]] = @board_visual[dest[0]][dest[1]] == "  #{player.pieces[idx].symbol}  ".bg_cyan ? CYAN_BLOCK : RED_BLOCK

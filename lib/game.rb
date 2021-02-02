@@ -6,31 +6,23 @@ class Game
   CYAN_BLOCK = '     '.bg_cyan
   RED_BLOCK = '     '.bg_red
   attr_accessor :player_one, :player_two
-
-  def menu
-    puts '\nHello, Welcome to my great chess game in progress!\nWhat would you like to do?\n'
-    puts '(1) Player vs Player'
-    puts '(2) Player vs Computer'
-    puts '(3) Load a Game'
-    input = gets.chomp #error handle
-
-    case input
-
-    when '1'
-      play_game
-    end
-    
-  end
-  
   def switch_player(name)
     name == player_one.name ? player_two : player_one
   end
 
-  def play_game
-    puts 'chess stuff'
-    @player_one = Player.new('parker', 'white')
-    @player_two = Player.new('bop', 'black')
+  def begin
+    puts "Hello, welcome give instruction later"
+    puts "Player one, you will be white, what is your name?\n"
+    name1 = gets.chomp
+    puts "Player one, you will be black, what is your name?\n"
+    name2 = gets.chomp
+    @player_one = Player.new(name1, 'white')
+    @player_two = Player.new(name2, 'black')
     @board = Board.new
+    play_game
+  end
+
+  def play_game
     done = false
     player = player_one
     opponent = player_two
@@ -39,12 +31,15 @@ class Game
         puts "#{player.name}, your turn!\n"
         @board.generate_board_visual
         puts @board.print_board(@player_one, @player_two)
-        puts 'choose piece'
-        start = @board.input_to_coord(gets.chomp)
-        raise "Invalid input" if start.nil?
+        puts 'choose piece or type "save" to save the game'
+        start = gets.chomp
+        return 'save' if start == 'save'
+        start = @board.input_to_coord(start)
         puts 'where to'
         dest = @board.input_to_coord(gets.chomp) 
-        raise "Invalid input" if dest.nil?
+        56.times {puts "\n"}
+        raise "Invalid input, please try again" if start.nil?
+        raise "Invalid input, please try again" if dest.nil?
         raise "Invalid input, please select a valid cell" if player.find_piece_index(start[0], start[1]).nil?
         piece = player.pieces[player.find_piece_index(start[0], start[1])]
         raise "Invalid input, please ensure input is within bounds" if start.nil? || dest.nil?
@@ -55,9 +50,16 @@ class Game
           puts e.to_s.red
           retry
       end
-        if !@board.update_board(player, opponent, start, dest).nil?
+      result = @board.update_board(player, opponent, start, dest)
+        if !result.nil?
           opponent = player
           player = switch_player(player.name)
+        end
+        if result == 'checkmate'
+          puts "Congratulations #{opponent.name}, you won!\n"
+          puts "Thanks for playing!\n"
+          done = true
+          return 'checkmate'
         end
     end
   end
