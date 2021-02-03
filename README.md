@@ -15,5 +15,4 @@ To choose a piece to move and/or a location to move to just type its coordinates
 Good luck, enjoy, and my github is parkercon if there is any problems!
 
 # Screenshot
-![Gameplay Screenshot]
-(./images/chess_screenshot.png)
+![Gameplay Screenshot](./images/chess_screenshot.png)
