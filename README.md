@@ -1,6 +1,6 @@
 # Ruby Chess
 This is my implementation of chess in Ruby for The Odin Project. 
-Enjoy my take on chess and feel free to run the repl.it
+Enjoy my take on chess and feel free to run the [repl.it](https://repl.it/@parkercon/rubychess)
 
 # Introduction
 Hello! Welcome to my Greatest Work in progress chess game!
