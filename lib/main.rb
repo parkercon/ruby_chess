@@ -1,7 +1,26 @@
 require_relative 'board'
 require_relative 'game'
 require_relative 'colors'
+require 'io/console'
 require 'yaml'
+
+def instructions
+  <<~HEREDOC
+
+    Hello! Welcome to my Greatest Work in progress chess game!
+
+    To play is relatively straightforward.
+    The general rules of chess are enforced, with the exception of en passant and castling
+    not being supported at the moment.
+
+    To choose a piece to move and/or a location to move to just type its coordinates
+    (e.x. 'd4') and then press enter
+
+    Good luck, enjoy, and my github is parkercon if there is any problems!
+
+    press any key to continue...
+  HEREDOC
+end
 
 def save_game(game)
   begin
@@ -13,7 +32,7 @@ def save_game(game)
     puts e.to_s.red
     input = gets.chomp.downcase
     until input == 'y' || input == 'n'
-      puts "Invalid input"
+      puts "Invalid input".red
       puts e.to_s.red
     end
     if input == 'y'
@@ -47,6 +66,8 @@ def load_game
 end
 
 def menu
+  puts instructions
+  STDIN.getch
   input = nil
   until input == '1' || input == '2' || input == '3' || input == '4'
     puts "\nHello, Welcome to my great chess game in progress!\nWhat would you like to do?\n"
@@ -64,11 +85,12 @@ def menu
       puts "Thanks for playing!\n"
       return 
     else 
-      puts "Invalid Input, try again"
+      puts "Invalid Input, try again".red
     end
   end
   result = g.play_game
   save_game(g) if result == 'save'
+  return if result == 'quit'
   puts "Thanks for playing!\n"
   menu 
 end

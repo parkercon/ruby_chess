@@ -93,7 +93,6 @@ class Board
       print "\n"
     end 
     puts "\t\t\t    a    b    c    d    e    f    g    h"
-    # @board_visual[data[0]][data[1]] = @board_visual[data[0]][data[1]] == "  #{piece.symbol}  ".bg_cyan ? CYAN_BLOCK : RED_BLOCK
   end 
 
   def pawn_validation(player, start, dest)
@@ -120,9 +119,9 @@ class Board
     opp_king_idx = nil
     opponent.pieces.each_with_index{ |val, index| opp_king_idx = index if val.is_a? King }
 
-    copy_start = start.dup #shallow copy!!!
+    copy_start = start.dup
     copy_dest = dest.dup
-    if player.pieces[idx].is_a? Knight #need to check for check
+    if player.pieces[idx].is_a? Knight 
       player.pieces.each do |piece|
         if dest[0] == piece.x && dest[1] == piece.y
           return nil
@@ -137,7 +136,7 @@ class Board
       return 'bo'
     end
 
-    if player.pieces[idx].is_a? Pawn #need to check for check
+    if player.pieces[idx].is_a? Pawn
       player.pieces.each do |piece|
         if dest[0] == piece.x && dest[1] == piece.y
           return nil
@@ -262,14 +261,14 @@ class Board
     dest = Array.new(2)
     dest[0] = opponent.pieces[king_index].x
     dest[1] = opponent.pieces[king_index].y
-    conflict_check(player, opponent, start, dest) == 'bop' #need to work on to test for check
+    conflict_check(player, opponent, start, dest) == 'bop'
   end
 
   def moved_into_check?(player, opponent, dest)
     start = Array.new(2)
     opponent.pieces.each do |piece|
       start[0] = piece.x
-      start[1] = piece.y#could clean up
+      start[1] = piece.y
       if conflict_check(opponent, player, start, dest) == 'bop'
         return true
       end
@@ -311,7 +310,7 @@ class Board
     i = 0
     opponent.pieces.each do |piece|
       pos_moves.each do |move|
-        if piece.get_valid_moves.include?(move) #need to make sure it can get too king
+        if piece.get_valid_moves.include?(move) 
           i += 1
         end
       end
@@ -396,7 +395,7 @@ class Board
     end
   end
 
-  def update_board(player, opponent, start, dest) #need to change to allow multiple players
+  def update_board(player, opponent, start, dest)
     idx = player.find_piece_index(start[0], start[1])
     opp_idx = opponent.find_piece_index(dest[0], dest[1])
     player.pieces[idx].x = dest[0]
@@ -404,7 +403,7 @@ class Board
     if !opp_idx.nil?
       print "\nPiece Captured!\n".green
       copy_piece = opponent.pieces[opp_idx]
-      opponent.pieces.slice!(opp_idx) #to remove opponent pieces
+      opponent.pieces.slice!(opp_idx)
     end
     @board_visual[start[0]][start[1]] = @board_visual[start[0]][start[1]] == "  #{player.pieces[idx].symbol}  ".bg_cyan ? CYAN_BLOCK : RED_BLOCK
     if player.pieces[idx].is_a? Pawn

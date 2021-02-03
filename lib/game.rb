@@ -11,15 +11,14 @@ class Game
   end
 
   def begin
-    puts "Hello, welcome give instruction later"
+    puts "Hello, Welcome!\n"
     puts "Player one, you will be white, what is your name?\n"
     name1 = gets.chomp
-    puts "Player one, you will be black, what is your name?\n"
+    puts "Player two, you will be black, what is your name?\n"
     name2 = gets.chomp
     @player_one = Player.new(name1, 'white')
     @player_two = Player.new(name2, 'black')
     @board = Board.new
-    play_game
   end
 
   def play_game
@@ -31,9 +30,10 @@ class Game
         puts "#{player.name}, your turn!\n"
         @board.generate_board_visual
         puts @board.print_board(@player_one, @player_two)
-        puts 'choose piece or type "save" to save the game'
+        puts 'choose piece, type "save" to save the game, or "quit"'
         start = gets.chomp
-        return 'save' if start == 'save'
+        return 'save' if start.downcase == 'save'
+        return 'quit' if start.downcase == 'quit'
         start = @board.input_to_coord(start)
         puts 'where to'
         dest = @board.input_to_coord(gets.chomp) 
